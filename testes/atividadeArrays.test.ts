@@ -20,6 +20,7 @@ export const dinossauros: Dinossauro[] = [
 // Função que simula uma busca de dados
 export function buscarDinossauros(): Promise<Dinossauro[]> {
   return new Promise((resolve) => {
+    setTimeout(() => {
       resolve(dinossauros)
     }, 1000)
   })
@@ -35,6 +36,7 @@ export async function obterCarnivoros(): Promise<Dinossauro[]> {
   // para encontrar apenas os dinossauros carnívoros.
   const carnivoros = dados.filter((dinossauro) => dinossauro.carnivoro)
 
+  // Retorna o resultado final.
   return carnivoros
 }
 
@@ -44,27 +46,47 @@ export async function obterCarnivoros(): Promise<Dinossauro[]> {
 test('Deve retornar todos os dinossauros', async () => {
   const resultado = await buscarDinossauros()
 
+  // Verifica se foram retornados 4 dinossauros
   expect(resultado).toHaveLength(4)
 
   // Verifica o primeiro dinossauro
   expect(resultado[0].nome).toBe('Tyrannosaurus Rex')
-})
+});
 
 // Teste da função assíncrona
 test('Deve retornar apenas os dinossauros carnívoros', async () => {
+  // Aguarda a função assíncrona terminar
   const resultado = await obterCarnivoros()
 
-  // Existem 2 dinossauros carnívoros
   expect(resultado).toHaveLength(2)
 
-  // Verifica os nomes dos dinossauros retornados
   expect(resultado[0].nome).toBe('Tyrannosaurus Rex')
   expect(resultado[1].nome).toBe('Velociraptor')
 
-  // Garante que um dinossauro herbívoro não foi retornado
   expect(resultado).not.toContain({
     id: 2,
     nome: 'Triceratops',
     carnivoro: false
-  })
+  });
+});
+
+// Teste utilizando .map()
+test('Deve retornar apenas os nomes dos dinossauros', async () => { 
+const resultado = await buscarDinossauros()
+const nomes = resultado.map((dinossauro) => dinossauro.nome) 
+
+expect(nomes).toEqual([ 'Tyrannosaurus Rex', 'Triceratops', 'Velociraptor', 'Brachiosaurus' ])
 })
+
+test('Deve contar quantos dinossauros são carnívoros', async () => {
+const resultado = await buscarDinossauros()
+const quantidadeCarnivoros = resultado.reduce( 
+    (total, dinossauro) => { 
+    if (dinossauro.carnivoro) { 
+        return total + 1
+        }
+     return total 
+      }, 
+      0 )
+expect(quantidadeCarnivoros).toBe(2) })
+
